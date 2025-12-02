@@ -91,7 +91,7 @@ case_status <- denver_victim_races %>%
 
 ## Final Plot
 This chunk generates the final plot with maps separated by solved and unsolved cases
-```{r}
+```{r fig.width= 15, fig.height= 10}
 ggplot() +
   geom_sf(data = denver_boundaries) +
   geom_sf(data = case_status, aes(color = victim_race), alpha = 0.5) +
