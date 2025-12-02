@@ -2,29 +2,60 @@
 title: "Samson_HW5"
 author: "Danielle Samson"
 date: "2025-12-01"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning= FALSE, message= FALSE, error= FALSE)
 ```
 
-## R Markdown
+## Choose a city to work with
+In the following chunk, I read in the data, looked through the list of potential cities then decided to work with Denver. I then filtered the dataset to include only the data from Denver and used the provided coordinates to turn the dataframe into a simple feature object. Finally, I generated the plot to help visualize where I am and where I need to go with my code
+```{r choose a city}
+library(tidyverse)
+library(sf)
+library(tigris)
+library(ggthemes)
+#read in the data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+homicides <- read.csv("homicide-data.csv")
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#choose a city
 
-```{r cars}
-summary(cars)
+print(unique(homicides$city))
+
+denver_homicides <- homicides %>%
+  filter(city == 'Denver') %>% 
+  st_as_sf(coords = c("lon", "lat"),
+               crs = 4269)
+
+#evaluate the current plot
+
+denver_homicides %>%
+  ggplot() +
+  geom_sf()
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Input city boundaries
+In this chunk, I took the Colorado geometry from the tigris package and then filtered the data to include only Denver. Looking back, I think I could have done this in one step by immediately filtering by the NAME column. Again, I checked in on the plot
+```{r results='hide'}
+#extract denver boundaries from tigris
+places <- tigris::places(state = "CO",
+                                    cb = FALSE,
+                                    year = "2024")
+denver_boundaries <- places %>%
+  filter(NAME == "Denver")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r evaluate the current plot}
+denver_boundaries %>%
+  ggplot() +
+  geom_sf()
+
+```
+
+
+
