@@ -57,5 +57,76 @@ denver_boundaries %>%
 
 ```
 
+## Align Geometries
+In this chunk, I ensure that my geometries align before continuing to manipulate my dataset
+```{r ensure geometry alignment}
+
+ggplot() +
+  geom_sf(data = denver_boundaries) +
+  geom_sf(data = denver_homicides)
+```
+
+
+## Factor Lump to Most Murdered Races
+In this chunk, I convert the victim_race column to a factor to be used with the fct_lump function to highlight the races with the most murders. I then visualize the status of the plot
+```{r}
+denver_victim_races <- denver_homicides %>%
+  mutate(victim_race = as.factor(victim_race)) %>%
+  mutate(victim_race = fct_lump(victim_race, n = 3))
+
+ggplot() +
+  geom_sf(data = denver_boundaries) +
+  geom_sf(data = denver_victim_races, aes(color = victim_race)) 
+
+
+```
+
+## Unsolved cases
+In this chunk, I create a new column to sort the cases by solved vs unsolved
+```{r}
+#solved vs unsolved columns
+case_status <- denver_victim_races %>%
+  mutate(solved = ifelse(disposition %in% c("Closed without arrest", "Closed by arrest"), "Solved", "Unsolved"))
+```
+
+## Final Plot
+This chunk generates the final plot with maps separated by solved and unsolved cases
+```{r}
+ggplot() +
+  geom_sf(data = denver_boundaries) +
+  geom_sf(data = case_status, aes(color = victim_race), alpha = 0.5) +
+  facet_wrap("solved") +
+  theme_stata() + 
+  labs(
+    title = "Denver Homicides by Race", 
+    color = "Victim Race"
+  )
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
